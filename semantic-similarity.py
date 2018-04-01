@@ -18,21 +18,19 @@ words_ex=[]
 #Lemmatization
 lemma=WordNetLemmatizer()
 
-def penn_to_wn(tag):
-    #Convert from a Penn Treebank tag to a simplified Wordnet tag
-    if tag.startswith('N'):
-        return 'n'
-    elif tag.startswith('V'):
-        return 'v'
-    elif tag.startswith('J'):
-        return 'a'
-    elif tag.startswith('R'):
-        return 'r'
-    else:
-        return None
- 
 def tagged_to_synset(word,tag):
-    wn_tag=penn_to_wn(tag)
+    #Convert from a Penn Treebank tag to a simplified Wordnet tag
+    wn_tag=''
+    if tag.startswith('N'):
+        wn_tag='n'
+    elif tag.startswith('V'):
+        wn_tag='v'
+    elif tag.startswith('J'):
+        wn_tag='a'
+    elif tag.startswith('R'):
+        wn_tag='r'
+    else:
+        wn_tag=None
     if wn_tag is None:
         return None
     try:
@@ -87,8 +85,9 @@ def top_words_tags(df):
         word_freq[key]=all_word_frequencies
     return word_freq
 
-#This algorithm is proposed by Mihalcea et al. in the paper "Corpus-based and Knowledge-based Measures
-#of Text Semantic Similarity" (https://www.aaai.org/Papers/AAAI/2006/AAAI06-123.pdf)
+#This algorithm has been suggested by Mihalcea et al. in the paper
+#"Corpus-based and Knowledge-based Measures of Text Semantic Similarity"
+#(https://www.aaai.org/Papers/AAAI/2006/AAAI06-123.pdf)
 
 def sentence_similarity(texts,words):
  
@@ -140,16 +139,16 @@ def method3(data):
     words=[]
     similarity={}
     for text in list(data['content']):
-        t=pos_tag(word_tokenize(clean(text))
-        texts.append(tagged_to_synset(*t)))
+        pos_text=pos_tag(word_tokenize(clean(text)))
+        texts+=[tagged_to_synset(w,t) for w,t in pos_text]
     for tag in tags:
-        words.append(tagged_to_synset(*pos_tag(word_tokenize(
+        words+=[tagged_to_synset(*pos_tag(word_tokenize(
             " ".join(word_freq[tag].keys())))))
-    for text in texts:
-        for word in words:
-            similarity[tag]=sentence_similarity(text,word)
+    #for text in texts:
+        #for word in words:
+            #similarity[tag]=sentence_similarity(text,word)
         #dg={key:value for key,value in similarity.items() if value>=0.2}
-    print(similarity)
+    print(texts)
     #return predictions
 
 df=pd.read_json('export-2018-02-09.json')
