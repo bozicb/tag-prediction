@@ -90,25 +90,20 @@ def top_words_tags(df):
 #This algorithm is proposed by Mihalcea et al. in the paper "Corpus-based and Knowledge-based Measures
 #of Text Semantic Similarity" (https://www.aaai.org/Papers/AAAI/2006/AAAI06-123.pdf)
 
-def sentence_similarity(text,words):
-    # Get the synsets for the tagged words
-    text_synsets=[tagged_to_synset(*tagged_text) for tagged_text in
-              text]
-    word_synsets=[tagged_to_synset(*tagged_word) for tagged_word in
-                  words]
+def sentence_similarity(texts,words):
  
     # Filter out the Nones
-    text_synsets = [text for text in text_synsets if text]
-    word_synsets = [word for word in word_synsets if word]
+    text_synsets = [text for text in texts if text]
+    word_synsets = [word for word in words if word]
  
     score, count = 0.0, 0
 
     #For each word in the first sentence
-    for text in text_synsets:
+    for text in texts:
         # Get the similarity value of the most similar word in the
         # other sentence
         best_score = max([text.path_similarity(word) for word in
-                          word_synsets])
+                          words])
         #Check that the similarity could have been computed
         if best_score is not None:
             score += best_score
@@ -145,10 +140,11 @@ def method3(data):
     words=[]
     similarity={}
     for text in list(data['content']):
-        texts.append(pos_tag(word_tokenize(clean(text))))
+        t=pos_tag(word_tokenize(clean(text))
+        texts.append(tagged_to_synset(*t)))
     for tag in tags:
-        words.append(pos_tag(word_tokenize(
-            " ".join(word_freq[tag].keys()))))
+        words.append(tagged_to_synset(*pos_tag(word_tokenize(
+            " ".join(word_freq[tag].keys())))))
     for text in texts:
         for word in words:
             similarity[tag]=sentence_similarity(text,word)
