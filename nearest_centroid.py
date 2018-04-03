@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import string
 import re
+import time
 
 from sklearn.cluster import KMeans
 from sklearn import metrics
@@ -48,42 +49,47 @@ def clean(text):
                         for word in num_free.split())
     return normalized
 
-def pred4a(text,df):
-    train_a = df['content'].tolist()
-    vectorizer = CountVectorizer(stop_words="english", tokenizer=word_tokenize, ngram_range=(1,1),max_features=10000, analyzer="word")
-    vectorizer_train_a = vectorizer.fit_transform(train_a)
-    vec=vectorizer.transform([clean(text)]).toarray()
-    ltag=df.tags.tolist()
-    ltag1 = [item for sublist in ltag for item in sublist]
-    s = pd.Series([ str(ltag[x]).strip('[]') for x in range(len(ltag))])
-    dict_sim={}
-    keys=list(set(ltag1))
-    for i in keys:
-        tg1=train1[s.str.contains(i,case=False)]
-        ind1=tg1.index.values
-        X=vectorizer_train_a[ind1].toarray()
-        kmeans_model = KMeans(n_clusters=1).fit(X)
-        dict_sim[i]=cosine_similarity(vec,np.array(kmeans_model.cluster_centers_))[0,0]
-    dg={ key:value for key, value in dict_sim.items() if value >= 0.1}
-    if len(dg)!=0:
-        if len(dg)>=3:
-            p1=dict((x, y) for x, y in sorted(dg.items(), key=lambda x:x[1],reverse=True)[0:3])
-        else:
-            p1=dict((x, y) for x, y in sorted(dg.items(), key=lambda x:x[1],reverse=True)[0:len(dg)])
-    else:
-        dg2 = { key:value for key, value in dict_sim.items() if value < 0.1}
-        p1=dict((x, y) for x, y in sorted(dg2.items(), key=lambda x:x[1],reverse=True)[0:1])
-    return p1.keys()
-
-def testmet4a(df):
-    lx=list(df['content'])
-    nl=len(lx)
-    lp=[]
-    for i in lx:
-        lp.append(pred4a(i,train1))
-    return lp
+def nearest_centroid(data):
+    train,test=train_test_split(df,test_size=.2)
+    train=train.reset_index().drop('index',axis=1)
+    texts=list(data['content'])
+    train_texts=train['content'].tolist()
+    vectorizer=CountVectorizer(stop_words='english',
+        tokenizer=word_tokenize,ngram_range=(1,1),max_features=10000,
+        analyzer='word')
+    train_vectorizer=vectorizer.fit_transform(train_texts)
+    tags=list(set([item for sublist in train.tags.tolist()
+                   for item in sublist]))
+    s=pd.Series([str(train.tags.tolist()[x]).strip('[]')
+                 for x in range(len(train.tags.tolist()))])
+    predictions=[]
+    for text in texts:
+        vec=vectorizer.transform([clean(text)]).toarray() 
+        dict_sim={}
+        for tag in tags:
+            tg1=train[s.str.contains(tag,case=False)]
+            ind1=tg1.index.values
+            X=train_vectorizer[ind1].toarray()
+            kmeans_model=KMeans(n_clusters=1).fit(X)
+            dict_sim[tag]=cosine_similarity(vec,np.array(
+                kmeans_model.cluster_centers_))[0,0]
+        dg={key:value for key,value in dict_sim.items() if value>=0.1}
+        if len(dg)>=3:p1=dict((x,y) for x,y in
+            sorted(dg.items(),key=lambda x:x[1],reverse=True)[0:3])
+        elif len(dg)>0:p1=dict((x,y) for x,y in
+            sorted(dg.items(),key=lambda x:x[1],reverse=True)[0:len(dg)])
+        else:p1=dict((x, y) for x, y in
+            sorted(dict_sim.items(), key=lambda x:x[1],
+                   reverse=True)[0:1])
+        predictions.append(p1.keys())
+    predictions=pd.DataFrame({'predictions':predictions})
+    predictions['original']=data.tags
+    return predictions
 
 df=pd.read_json('export-2018-02-09.json')
 train,test=train_test_split(df,test_size=.2)
 train1=train.reset_index().drop('index', axis=1)
-print(testmet4a(df))
+start=time.time()
+print(nearest_centroid(df))
+end=time.time()
+print('time: '+str(end-start))
