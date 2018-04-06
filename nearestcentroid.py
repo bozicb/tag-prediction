@@ -1,56 +1,17 @@
 import pandas as pd
 import numpy as np
-import string
-import re
-import time
 
 from sklearn.cluster import KMeans
-from sklearn import metrics
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
 from nltk import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
+from scipy.sparse import hstack
 
-#English Stop Words
-stop=set(stopwords.words('english'))
-#Punctuation 
-exclude=set(string.punctuation)
-# Replace functional approach
-repls=("(",""),(")",""),("'s","")
-#Exclusion Words
-#words_ex=['room','mr','please','mrs','guest']
-words_ex=[]
-#Lemmatization
-lemma=WordNetLemmatizer()
+from tagging.helper import clean
 
-#Function to clean text
-
-def clean(text):
-    #Remove specific chars
-    rem1=re.sub("[!#*%:1234567890?,.;&-]","",text)
-    #Remove non ASCII chars
-    rem2=re.sub(r'[^\x00-\x7f]',r' ',rem1)
-    #Replace using functional approach
-    rem3=reduce(lambda a,kv:a.replace(*kv),repls,rem2)   
-    #Exclude stopwords
-    stop_free=" ".join([i for i in rem2.lower().split()
-                        if i not in stop])
-    #Exclude Punctuation
-    punc_free=''.join(i for i in stop_free if i not in exclude)
-    #Exclude words
-    cust_words=" ".join(i for i in punc_free.split()
-                        if i not in words_ex)
-    #Exclude numbers
-    num_free=''.join([i for i in cust_words if not i.isdigit()])
-    #Lemmatization
-    normalized=" ".join(lemma.lemmatize(word)
-                        for word in num_free.split())
-    return normalized
-
-def nearest_centroid(data):
-    train,test=train_test_split(df,test_size=test_size)
+def nearest_centroid(data,include_books=True,test_size=.2):
+    train,test=train_test_split(data,test_size=test_size)
     train=train.reset_index().drop('index',axis=1)
     texts=list(data['content'])
     tags=list(set([item for sublist in train.tags.tolist()
@@ -85,7 +46,7 @@ def nearest_centroid(data):
                     kmeans_model.cluster_centers_))[0,0]
             dg={key:value for key,value in dict_sim.items() if
                 value>=0.1}
-            if len(dg)>=3:p1=dict((x,y) for x,yin sorted(dg.items(),
+            if len(dg)>=3:p1=dict((x,y) for x,y in sorted(dg.items(),
                             key=lambda x:x[1],reverse=True)[0:3])
             elif len(dg)>0:p1=dict((x,y) for x,y in sorted(dg.items(),
                             key=lambda x:x[1],reverse=True)[0:len(dg)])
