@@ -1,7 +1,7 @@
 import pandas as pd
 import time
 
-from multilabelclassifier import multi_label_classification
+from multilabel import multi_label_classification
 from semanticsimilarity import semantic_similarity
 from wordfrequencies import word_frequencies
 from nearestcentroid import nearest_centroid
