@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pickle
 
 from sklearn.model_selection import train_test_split
@@ -7,7 +9,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.externals import joblib
 from nltk import word_tokenize
-from scipy.sparse import hstack
+from scipy.sparse import hstack,coo_matrix
 
 def multi_label_classification(data,include_books=True,test_size=.2):
     train,test=train_test_split(data,test_size=test_size)
@@ -92,7 +94,7 @@ def multi_label_classification(data,include_books=True,test_size=.2):
     combined_pred=np.where((cv_pred+tv_pred)!=0,mlb.classes_,"")
     
     # Load the array into a DataFrame constructor and join non-empty strings
-    predictions=pd.DataFrame(combined_pred).apply(join_strings,axis=1).to_frame("predicted")
+    predictions=pd.DataFrame(combined_pred).apply(lambda x:" ".join(sorted(x)).strip(),axis=1).to_frame("predicted")
     predictions['predicted']=predictions['predicted'].apply(lambda x:x.split())
     predictions=pd.concat([test['tags'].reset_index(),predictions['predicted']],axis=1,
                           keys=['original','predicted'],ignore_index=True)
