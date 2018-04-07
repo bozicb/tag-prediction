@@ -48,16 +48,15 @@ def tag_word_frequencies(df):
     series_of_tags=pd.Series([str(list_of_tags[x]).strip('[]')
                                 for x in range(len(list_of_tags))])
     word_freq={}
+    df=df.reset_index()
     for key in keys:
         #for every key: 
         #(1) get a list of all tags where the key is contained, 
         #(2) get value counts of tags with the key / all value counts
         #    for that key
         #(3) add frequencies to dictionary
-        list_of_words_for_tag=[item for sublist in 
-            [word_tokenize(doc) for doc in
-             df[series_of_tags.str.contains(key,case=False)].iloc[:,2]
-             .tolist()] 
+        list_of_words_for_tag=[item for sublist in [word_tokenize(doc) for doc in
+             df[series_of_tags.str.contains(key,case=False)].iloc[:,2].tolist()] 
             for item in sublist]
         all_word_frequencies=((pd.Series(list_of_words_for_tag)
                                .value_counts())/
