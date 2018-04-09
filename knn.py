@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from nltk import word_tokenize
 from tagging.helper import clean
 
-def knn(data,k,include_books=True):
+def knn(data,k,include_books=True,one_run=False):
     texts=list(data['content'])
     tags=data.tags.tolist()
     predictions=[]
@@ -40,6 +40,7 @@ def knn(data,k,include_books=True):
             else:
                 res=set(rt[0])
             predictions.append(list(res))
+            if one_run:break
     else:
         for text in texts:
             dist_cos={}
@@ -59,6 +60,7 @@ def knn(data,k,include_books=True):
             else:
                 res=set(rt[0])
             predictions.append(list(res))
+            if one_run:break
     predictions=pd.DataFrame({'predictions':predictions})
     predictions['original']=data.tags
     return predictions
