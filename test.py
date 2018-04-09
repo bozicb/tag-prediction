@@ -90,6 +90,6 @@ def recall(df):
         recall.to_csv('recall_test.csv')
 
 df=pd.read_json('export-2018-02-09.json')
-performance(df)
+#performance(df)
 recall(df)
 
