@@ -56,7 +56,6 @@ def performance(df):
             end=time.time()
             execution_times["method4_content+books_k"+str(k+1)][i]=end-start
             execution_times.to_csv("performance_test.csv")
-    display(execution_times)
 
 def recall(df):
     recall=pd.Series(index=['method1_content','method1_content+books','method2',
