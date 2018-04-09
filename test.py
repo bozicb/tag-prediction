@@ -18,41 +18,41 @@ def performance(df):
         #Method 1
         sample_df = df.sample(frac=i/100.0)
         start=time.time()
-        multi_label_classification(sample_df,False)
+        multi_label_classification(sample_df,False,test_size=1.0/len(sample_df))
         end=time.time()
         execution_times["method1_content"][i]=end-start
         execution_times.to_csv("performance_test.csv")
         start=time.time()
-        multi_label_classification(sample_df,True)
+        multi_label_classification(sample_df,True,test_size=1.0/len(sample_df))
         end=time.time()
         execution_times["method1_content+books"][i]=end-start
         execution_times.to_csv("performance_test.csv")
         #Method 2
         start=time.time()
-        word_frequencies(sample_df)
+        word_frequencies(sample_df,one_run=True)
         end=time.time()
         execution_times["method2"][i]=end-start
         execution_times.to_csv("performance_test.csv")
         #Method 3
         start=time.time()
-        nearest_centroid(sample_df,False)
+        nearest_centroid(sample_df,False,test_size=1.0/len(sample_df))
         end=time.time()
         execution_times["method3_content"][i]=end-start
         execution_times.to_csv("performance_test.csv")
         start=time.time()
-        nearest_centroid(sample_df,True)
+        nearest_centroid(sample_df,True,test_size=1.0/len(sample_df))
         end=time.time()
         execution_times["method3_content+books"][i]=end-start
         execution_times.to_csv("performance_test.csv")
         #Method 4
         for k in range(5):
             start=time.time()
-            knn(sample_df,k+1,False)
+            knn(sample_df,k+1,False,one_run=True)
             end=time.time()
             execution_times["method4_content_k"+str(k+1)][i]=end-start
             execution_times.to_csv("performance_test.csv")
             start=time.time()
-            knn(sample_df,k+1,True)
+            knn(sample_df,k+1,True,one_run=True)
             end=time.time()
             execution_times["method4_content+books_k"+str(k+1)][i]=end-start
             execution_times.to_csv("performance_test.csv")
@@ -91,5 +91,4 @@ def recall(df):
 
 df=pd.read_json('export-2018-02-09.json')
 performance(df)
-recall(df)
-
+#recall(df)

@@ -2,7 +2,7 @@ import pandas as pd
 from nltk import word_tokenize
 from tagging.helper import tag_word_frequencies
 
-def word_frequencies(data):
+def word_frequencies(data,one_run=False):
     predictions=[]
     word_freq=tag_word_frequencies(data)
     tags=word_freq.keys()
@@ -23,6 +23,7 @@ def word_frequencies(data):
             dg2={key:value for key,value in met.items() if value<0.1}
             p1=dict((x,y) for x,y in sorted(dg2.items(),key=lambda x:x[1],reverse=True)[0:1])
         predictions.append(p1.keys())
+        if one_run:break
     predictions=pd.DataFrame({'predictions':predictions})
     predictions['original']=data.tags
     return predictions
