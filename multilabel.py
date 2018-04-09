@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pickle
 import numpy as np
 import pandas as pd
@@ -9,7 +11,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.externals import joblib
 from nltk import word_tokenize
-from scipy.sparse import hstack
+from scipy.sparse import hstack,coo_matrix
 
 def multi_label_classification(data,include_books=True,test_size=.2):
     train,test=train_test_split(data,test_size=test_size)
