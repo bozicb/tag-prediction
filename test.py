@@ -99,8 +99,8 @@ def recall(df,m1=None,m1b=None,m2=None,m3=None,m3b=None,m41=None,m4b1=None,m42=N
         m4b5.to_csv('recall/method4_content+books_k5.csv')
     for ix,m in enumerate([m1,m1b,m2,m3,m3b,m41,m4b1,m42,m4b2,m43,m4b3,m44,m4b4,m45,m4b5]):
         x=[]
-        for i in range(len(m['predicted'])):
-            x.append(len([e for e in m['predicted'][i] if e in m['original'][i]])/
+        for i in range(len(m['predict*'])):
+            x.append(len([e for e in m['predict*'][i] if e in m['original'][i]])/
                  float(len(m['original'][i])))
         recall[ix]=sum(x)/float(len(x))
         recall.to_csv('recall_test.csv')
