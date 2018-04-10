@@ -66,7 +66,7 @@ def recall(df,m1=None,m1b=None,m2=None,m3=None,m3b=None,m41=None,m4b1=None,m42=N
                             'method4_content+books_k3','method4_content_k4',
                             'method4_content+books_k4','method4_content_k5',
                             'method4_content+books_k5'])
-    if m1==None:
+    if m1 is not None:
         m1=multi_label_classification(df,False)
         m1.to_csv('recall/method1_content.csv')
         m1b=multi_label_classification(df,True)
