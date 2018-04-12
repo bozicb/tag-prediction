@@ -99,13 +99,14 @@ def recall(df,m1=None,m1b=None,m2=None,m3=None,m3b=None,m41=None,m4b1=None,m42=N
         m4b5.to_csv('recall/method4_content+books_k5.csv')
     for ix,m in enumerate([m1,m1b,m2,m3,m3b,m41,m4b1,m42,m4b2,m43,m4b3,m44,m4b4,m45,m4b5]):
         x=[]
-        for i in range(len(m.filter(regex="predict"))):
-            x.append(len([e for e in m.filter(regex='predict')[i] if e in m['original'][i]])/
-                 float(len(m['original'][i])))
+        for i in range(len(m['predictions'])):
+            x.append(len([e for e in m['original'].iloc[i] if e in m['predictions'].iloc[i]])/
+                 float(len(m['original'].iloc[i])))
         recall[ix]=sum(x)/float(len(x))
         recall.to_csv('recall_test.csv')
 
 df=pd.read_json('export-2018-02-09.json')
+'''
 m1=pd.read_csv('recall/method1_content.csv')
 m1b=pd.read_csv('recall/method1_content+books.csv')
 m2=pd.read_csv('recall/method2.csv')
@@ -121,5 +122,6 @@ m44=pd.read_csv('recall/method4_content_k4.csv')
 m4b4=pd.read_csv('recall/method4_content+books_k4.csv')
 m45=pd.read_csv('recall/method4_content_k5.csv')
 m4b5=pd.read_csv('recall/method4_content+books_k5.csv')
-#performance(df)
-recall(df,m1,m1b,m2,m3,m3b,m41,m4b1,m42,m4b2,m43,m4b3,m44,m4b4,m45,m4b5)
+'''
+performance(df)
+#recall(df)

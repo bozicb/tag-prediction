@@ -96,11 +96,11 @@ def multi_label_classification(data,include_books=True,test_size=.2):
     combined_pred=np.where((cv_pred+tv_pred)!=0,mlb.classes_,"")
     
     # Load the array into a DataFrame constructor and join non-empty strings
-    predictions=pd.DataFrame(combined_pred).apply(lambda x:" ".join(sorted(x)).strip(),axis=1).to_frame("predicted")
-    predictions['predicted']=predictions['predicted'].apply(lambda x:x.split())
-    predictions=pd.concat([test['tags'].reset_index(),predictions['predicted']],axis=1,
-                          keys=['original','predicted'],ignore_index=True)
+    predictions=pd.DataFrame(combined_pred).apply(lambda x:" ".join(sorted(x)).strip(),axis=1).to_frame("predictions")
+    predictions['predictions']=predictions['predictions'].apply(lambda x:x.split())
+    predictions=pd.concat([test['tags'].reset_index(),predictions['predictions']],axis=1,
+                          keys=['original','predictions'],ignore_index=True)
     predictions.drop(0,axis=1,inplace=True)
-    predictions.columns=['original','predicted']
+    predictions.columns=['original','predictions']
     
     return predictions
